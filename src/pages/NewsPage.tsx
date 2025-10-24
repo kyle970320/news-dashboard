@@ -2,7 +2,7 @@ import NewsTable from "./NewsTable";
 
 export default function NewsPage() {
   return (
-    <div className="min-h-dvh bg-white">
+    <div className="h-[100vh]">
       <NewsTable />
     </div>
   );

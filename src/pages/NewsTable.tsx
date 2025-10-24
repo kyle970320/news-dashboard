@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
 import type { NewsRow } from "../types/news";
+import NewsModal from "./../components/NewsModal";
 
 type SortKey = "published_utc" | "created_at";
 type SortDir = "asc" | "desc";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export default function NewsTable() {
   const [rows, setRows] = useState<NewsRow[]>([]);
@@ -17,7 +18,7 @@ export default function NewsTable() {
   const [ticker, setTicker] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("published_utc");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
-
+  const [modalData, setModalData] = useState<NewsRow | null>(null);
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
@@ -30,6 +31,12 @@ export default function NewsTable() {
     [ticker],
   );
 
+  const openModal = (data: NewsRow) => {
+    setModalData(data);
+  };
+  const closeModal = () => {
+    setModalData(null);
+  };
   async function fetchRows() {
     setLoading(true);
 
@@ -62,13 +69,14 @@ export default function NewsTable() {
       await fetchRows();
     };
     getInitialData();
-  }, []);
+  }, [page]);
 
   const totalPages = total ? Math.max(1, Math.ceil(total / PAGE_SIZE)) : 1;
 
   return (
     <>
-      <h1 className="text-xl font-semibold">News Dashboard</h1>
+      {modalData && <NewsModal closeModal={closeModal} data={modalData} />}
+      <h1 className="text-xl mb-5 font-semibold">호재와 악재</h1>
       <div className="p-6 space-y-4 bg-white">
         <div className="flex flex-wrap gap-3 items-end">
           <div className="flex flex-col">
@@ -147,13 +155,13 @@ export default function NewsTable() {
           <table className="min-w-[960px] w-full text-left">
             <thead className="bg-gray-50 text-xs uppercase text-gray-500">
               <tr>
-                <th className="px-3 py-2 w-[28rem]">Title</th>
-                <th className="px-3 py-2">Tickers</th>
-                <th className="px-3 py-2">Keywords</th>
+                <th className="px-3 py-2 w-[28rem]">제목</th>
+                <th className="px-3 py-2">티커</th>
+                {/* <th className="px-3 py-2">Keywords</th>
                 <th className="px-3 py-2">Published (UTC)</th>
-                <th className="px-3 py-2">Created</th>
-                <th className="px-3 py-2">Insights</th>
-                <th className="px-3 py-2">Link</th>
+                <th className="px-3 py-2">Created</th> */}
+                <th className="px-3 py-2">분석</th>
+                <th className="px-3 py-2">링크</th>
               </tr>
             </thead>
             <tbody className="text-sm">
@@ -176,16 +184,17 @@ export default function NewsTable() {
                   <tr
                     key={r.id}
                     className="border-t border-gray-100 hover:bg-gray-50"
+                    onClick={() => openModal(r)}
                   >
                     <td className="px-3 py-2">
                       <div className="line-clamp-2 font-medium">
                         {r.title ?? "-"}
                       </div>
-                      {r.description && (
+                      {/* {r.description && (
                         <div className="text-gray-500 text-xs line-clamp-2">
                           {r.description}
                         </div>
-                      )}
+                      )} */}
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex flex-wrap gap-1">
@@ -199,7 +208,7 @@ export default function NewsTable() {
                         ))}
                       </div>
                     </td>
-                    <td className="px-3 py-2">
+                    {/* <td className="px-3 py-2">
                       <div className="flex flex-wrap gap-1">
                         {(r.keywords ?? []).map((k) => (
                           <span
@@ -213,17 +222,53 @@ export default function NewsTable() {
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap">
                       {r.published_utc
-                        ? new Date(r.published_utc).toLocaleString()
+                        ? dayjs(new Date(r.published_utc)).format(
+                            "YYYY.MM.DD HH:mm",
+                          )
                         : "-"}
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap">
                       {r.created_at
-                        ? new Date(r.created_at).toLocaleString()
+                        ? dayjs(r.created_at)
+                            .add(9, "hour")
+                            .format("YYYY.MM.DD HH:mm")
                         : "-"}
-                    </td>
+                    </td> */}
                     <td className="px-3 py-2">
-                      <pre className="text-xs text-gray-600 max-w-[22rem] whitespace-pre-wrap line-clamp-3">
-                        {r.insights ? previewJSON(r.insights) : "-"}
+                      <pre className="text-xs text-gray-600 max-w-88 whitespace-pre-wrap line-clamp-3">
+                        {Array.isArray(r.insights) && r.insights.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {r.insights.map(
+                              (
+                                ins: {
+                                  ticker: string;
+                                  sentiment: string;
+                                  sentiment_reasoning: string;
+                                },
+                                idx: number,
+                              ) => (
+                                <span
+                                  key={idx}
+                                  className={`
+            px-2 py-0.5 text-xs rounded border
+            ${
+              ins.sentiment === "positive"
+                ? "bg-green-50 text-green-700 border-green-100"
+                : ins.sentiment === "negative"
+                  ? "bg-red-50 text-red-700 border-red-100"
+                  : "bg-gray-100 text-gray-700 border-gray-200"
+            }
+          `}
+                                  title={ins.sentiment_reasoning} // 마우스오버 시 이유 표시
+                                >
+                                  {ins.ticker} – {ins.sentiment}
+                                </span>
+                              ),
+                            )}
+                          </div>
+                        ) : (
+                          "-"
+                        )}
                       </pre>
                     </td>
                     <td className="px-3 py-2">
@@ -254,6 +299,13 @@ export default function NewsTable() {
             <button
               className="px-3 py-1.5 rounded border disabled:opacity-50"
               disabled={page <= 1 || loading}
+              onClick={() => setPage(1)}
+            >
+              처음으로
+            </button>
+            <button
+              className="px-3 py-1.5 rounded border disabled:opacity-50"
+              disabled={page <= 1 || loading}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
               이전
@@ -268,18 +320,16 @@ export default function NewsTable() {
             >
               다음
             </button>
+            <button
+              className="px-3 py-1.5 rounded border disabled:opacity-50"
+              disabled={page >= totalPages || loading}
+              onClick={() => setPage(totalPages)}
+            >
+              마지막으로
+            </button>
           </div>
         </div>
       </div>
     </>
   );
-}
-
-function previewJSON(obj: Record<string, string | Array<string>>) {
-  try {
-    const s = JSON.stringify(obj, null, 2);
-    return s.length > 600 ? s.slice(0, 600) + " …" : s;
-  } catch {
-    return String(obj);
-  }
 }

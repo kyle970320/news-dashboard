@@ -1,10 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./App.css";
-import NewsPage from "./pages/NewsPage";
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
 import type { Session } from "@supabase/supabase-js";
 import LoginForm from "./pages/LoginForm";
+import { Router } from "./Router";
 
 function App() {
   const queryClient = new QueryClient({
@@ -57,7 +57,7 @@ function App() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <NewsPage />
+        <Router />
       </QueryClientProvider>
     </>
   );

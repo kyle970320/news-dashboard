@@ -41,7 +41,7 @@ export default function NewsDetail() {
 
     if (id) fetchNews();
   }, [id]);
-  console.log({ newsData });
+
   const getSentimentIcon = (score: number) => {
     if (score > 0.6) return <TrendingUp className="w-5 h-5 text-green-600" />;
     if (score < 0.4) return <TrendingDown className="w-5 h-5 text-red-600" />;

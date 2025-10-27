@@ -149,14 +149,6 @@ export default function LoginForm({
           </div>
         </div>
 
-        {/* 데모 계정 안내 */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-800 text-center">
-            <span className="font-semibold">데모 계정:</span> demo@example.com /
-            demo123
-          </p>
-        </div>
-
         {/* 푸터 */}
         <div className="mt-8 text-center text-sm text-slate-500">
           <p>© 2025 주식 뉴스 대시보드. All rights reserved.</p>

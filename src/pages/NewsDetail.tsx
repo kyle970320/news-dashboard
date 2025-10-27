@@ -212,96 +212,101 @@ export default function NewsDetail() {
           <div className="p-6 sm:p-8 border-b border-slate-200 bg-gradient-to-br from-purple-50 to-pink-50">
             {Array.isArray(newsData.sentiment_insights) &&
               newsData.sentiment_insights.length > 0 &&
-              newsData.sentiment_insights.map((el) => {
-                return (
-                  <div className="mb-10">
-                    <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-                      <Brain className="w-5 h-5 text-purple-600" />
-                      AI 감정 분석
-                    </h3>
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                      <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-                        <div className="text-xs text-slate-600 mb-2 font-medium">
-                          감정 점수
-                        </div>
-                        <div
-                          className={`text-2xl font-bold flex items-center justify-center gap-2 ${
-                            el.score > 0.6
-                              ? "text-green-600"
-                              : el.score < 0.4
-                                ? "text-red-600"
-                                : "text-yellow-600"
-                          }`}
-                        >
-                          {getSentimentIcon(el.score)}
-                          {el.score.toFixed(0)}%
-                        </div>
-                        <div
-                          className={`mt-2 inline-block px-2 py-1 rounded-md text-xs font-medium ${getSentimentColor(el.score)}`}
-                        >
-                          {getSentimentLabel(el.base_sentiment)}
-                        </div>
-                      </div>
-
-                      <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-                        <div className="text-xs text-slate-600 mb-2 font-medium">
-                          모델 신뢰도
-                        </div>
-                        <div className="text-2xl font-bold text-blue-600">
-                          {(el.conf_model * 100).toFixed(0)}%
-                        </div>
-                        <div className="mt-2 w-full bg-slate-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full transition-all"
-                            style={{
-                              width: `${el.conf_model * 100}%`,
-                            }}
-                          ></div>
-                        </div>
-                      </div>
-
-                      <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-                        <div className="text-xs text-slate-600 mb-2 font-medium">
-                          규칙 신뢰도
-                        </div>
-                        <div className="text-2xl font-bold text-indigo-600">
-                          {(el.conf_rule * 100).toFixed(0)}%
-                        </div>
-                        <div className="mt-2 w-full bg-slate-200 rounded-full h-2">
-                          <div
-                            className="bg-indigo-600 h-2 rounded-full transition-all"
-                            style={{
-                              width: `${el.conf_rule * 100}%`,
-                            }}
-                          ></div>
-                        </div>
-                      </div>
-
-                      <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-                        <div className="text-xs text-slate-600 mb-2 font-medium">
-                          분석 이유
-                        </div>
-                        <div
-                          className={`mx-auto text-sm font-semibold ${getSentimentColor(el.score)}`}
-                        >
-                          {el.reasoning}
-                        </div>
-                      </div>
-                    </div>
-                    {el.sentiment_reasoning && (
-                      <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-                        <h4 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
-                          <Sparkles className="w-4 h-4 text-purple-600" />
-                          분석 근거
-                        </h4>
-                        <p className="text-slate-700 leading-relaxed">
-                          {el.sentiment_reasoning}
+              newsData.sentiment_insights
+                .filter((el) => el.base_sentiment !== "neutral")
+                .map((el) => {
+                  return (
+                    <div className="mb-10">
+                      <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+                        <Brain className="w-5 h-5 text-purple-600" />
+                        AI 감정 분석 -{" "}
+                        <p className={`px-1 ${getSentimentColor(el.score)}`}>
+                          {el.ticker}
                         </p>
+                      </h3>
+                      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                          <div className="text-xs text-slate-600 mb-2 font-medium">
+                            감정 점수
+                          </div>
+                          <div
+                            className={`text-2xl font-bold flex items-center justify-center gap-2 ${
+                              el.score > 0.6
+                                ? "text-green-600"
+                                : el.score < 0.4
+                                  ? "text-red-600"
+                                  : "text-yellow-600"
+                            }`}
+                          >
+                            {getSentimentIcon(el.score)}
+                            {el.score.toFixed(0)}%
+                          </div>
+                          <div
+                            className={`mt-2 inline-block px-2 py-1 rounded-md text-xs font-medium ${getSentimentColor(el.score)}`}
+                          >
+                            {getSentimentLabel(el.base_sentiment)}
+                          </div>
+                        </div>
+
+                        <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                          <div className="text-xs text-slate-600 mb-2 font-medium">
+                            모델 신뢰도
+                          </div>
+                          <div className="text-2xl font-bold text-blue-600">
+                            {(el.conf_model * 100).toFixed(0)}%
+                          </div>
+                          <div className="mt-2 w-full bg-slate-200 rounded-full h-2">
+                            <div
+                              className="bg-blue-600 h-2 rounded-full transition-all"
+                              style={{
+                                width: `${el.conf_model * 100}%`,
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+
+                        <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                          <div className="text-xs text-slate-600 mb-2 font-medium">
+                            규칙 신뢰도
+                          </div>
+                          <div className="text-2xl font-bold text-indigo-600">
+                            {(el.conf_rule * 100).toFixed(0)}%
+                          </div>
+                          <div className="mt-2 w-full bg-slate-200 rounded-full h-2">
+                            <div
+                              className="bg-indigo-600 h-2 rounded-full transition-all"
+                              style={{
+                                width: `${el.conf_rule * 100}%`,
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+
+                        <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                          <div className="text-xs text-slate-600 mb-2 font-medium">
+                            분석 이유
+                          </div>
+                          <div
+                            className={`mx-auto text-sm font-semibold ${getSentimentColor(el.score)}`}
+                          >
+                            {el.reasoning}
+                          </div>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                );
-              })}
+                      {el.sentiment_reasoning && (
+                        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                          <h4 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-purple-600" />
+                            분석 근거
+                          </h4>
+                          <p className="text-slate-700 leading-relaxed">
+                            {el.sentiment_reasoning}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
           </div>
 
           {/* 감정 인사이트 */}

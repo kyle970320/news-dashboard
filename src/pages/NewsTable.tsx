@@ -305,7 +305,7 @@ export default function NewsTable() {
                   <p className="text-xs font-medium text-slate-600 mb-1.5">
                     티커
                   </p>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-1.5 justify-center">
                     {item?.tickers?.map((ticker, idx) => (
                       <span
                         key={idx}
@@ -321,7 +321,7 @@ export default function NewsTable() {
                   <p className="text-xs font-medium text-slate-600 mb-1.5">
                     분석
                   </p>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-1.5 justify-center">
                     {Array.isArray(item.insights) &&
                     item.insights.length > 0 ? (
                       <div className="flex flex-wrap gap-1">

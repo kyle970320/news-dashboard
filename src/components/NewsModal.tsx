@@ -10,11 +10,11 @@ export default function NewsModal(props: Props) {
   const { closeModal, data } = props;
   return (
     <div
-      className="fixed top-0 left-0 z-100 flex items-center justify-center w-screen h-screen bg-[rgba(0,0,0,0.4)]"
+      className="fixed top-0 left-0 z-100 flex items-center justify-center w-full h-full bg-[rgba(0,0,0,0.4)]"
       onClick={closeModal}
     >
       <div
-        className="w-[80vw] h-[80vh] overflow-auto bg-white"
+        className="w-[80%] h-[40%] lg:h-[80vh] overflow-auto bg-white"
         onClick={(e) => {
           e.stopPropagation();
         }}
@@ -42,9 +42,7 @@ export default function NewsModal(props: Props) {
             label="발행일 (UTC)"
             value={
               data.published_utc
-                ? dayjs(data.published_utc)
-                    .add(9, "hour")
-                    .format("YYYY.MM.DD HH:mm")
+                ? dayjs(data.published_utc).format("YYYY.MM.DD HH:mm")
                 : "-"
             }
           />

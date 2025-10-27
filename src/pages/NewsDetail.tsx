@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import type { insight, NewsRow, sentimentInsight } from "../types/news";
+import type { insight, NewsRow } from "../types/news";
 import { supabase } from "../lib/supabase";
 // import dayjs from "dayjs";
 import {
@@ -89,28 +89,6 @@ export default function NewsDetail() {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
-
-  const renderInsightValue = (
-    value: sentimentInsight | Array<sentimentInsight>,
-  ) => {
-    if (Array.isArray(value)) {
-      return (
-        <ul className="space-y-2 mt-2">
-          {value.map((item, idx) => (
-            <li key={idx} className="flex items-start gap-2 text-slate-700">
-              <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></span>
-              <span>{item.base_sentiment}</span>
-            </li>
-          ))}
-        </ul>
-      );
-    }
-    return (
-      <p className="text-slate-700 mt-2">
-        {<span>{value.base_sentiment}</span>}
-      </p>
-    );
   };
 
   if (loading) {

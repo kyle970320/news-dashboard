@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import type { insight, NewsRow } from "../types/news";
 import { supabase } from "../lib/supabase";
 // import dayjs from "dayjs";

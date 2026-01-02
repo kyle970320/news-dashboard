@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 import type { NewsRow } from "../types/news";
 import { Loader2, Search, Sparkles, TrendingUp } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export default function NewsTable() {
   const navigate = useNavigate();
@@ -36,9 +36,6 @@ export default function NewsTable() {
         query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
       }
 
-      // 필터 적용 (AI 분석 여부)
-      // 실제로는 .filter("ai_analyzed", "eq", true/false) 사용
-
       const { data, count, error } = await query;
       if (error) {
         console.error(error);
@@ -48,7 +45,6 @@ export default function NewsTable() {
 
       const newRows = (data as NewsRow[]) ?? [];
 
-      // 필터링 (실제로는 DB에서 처리하는게 좋지만, 데모용으로 클라이언트에서 처리)
       const filteredRows = newRows.filter(() => {
         return true;
       });
@@ -66,7 +62,6 @@ export default function NewsTable() {
     [q, loading, PAGE_SIZE],
   );
 
-  // 초기 로드 및 필터/검색 변경 시
   useEffect(() => {
     setRows([]);
     setPage(0);
@@ -74,7 +69,6 @@ export default function NewsTable() {
     fetchRows(0, true);
   }, [q]);
 
-  // 무한 스크롤
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -97,7 +91,6 @@ export default function NewsTable() {
     };
   }, [hasMore, loading]);
 
-  // 페이지 변경 시 데이터 로드
   useEffect(() => {
     if (page > 0) {
       fetchRows(page, false);
@@ -113,16 +106,15 @@ export default function NewsTable() {
       handleSearch();
     }
   };
+
   const getTimeAgo = (dateString: string) => {
-    // 1) 마이크로초(.dddddd) → 밀리초(.ddd)로 정규화 (Safari 호환)
     let s = dateString.replace(/(\.\d{3})\d+$/, "$1");
 
-    // 2) 타임존 표기가 없으면(끝에 Z나 +09:00 같은 오프셋이 없으면) UTC로 가정해 Z 추가
     if (!/[zZ]$/.test(s) && !/[+-]\d{2}:\d{2}$/.test(s)) {
       s += "Z";
     }
 
-    const date = new Date(s); // UTC 표기면 자동으로 로컬(KST)로 변환됨
+    const date = new Date(s);
     const now = new Date();
 
     const diffMs = now.getTime() - date.getTime();
@@ -136,6 +128,7 @@ export default function NewsTable() {
     if (diffDays < 7) return `${diffDays}일 전`;
     return date.toLocaleDateString("ko-KR");
   };
+
   return (
     <div className="min-h-[80vh] bg-gradient-to-br from-slate-50 to-slate-100">
       {/* 헤더 */}
@@ -175,7 +168,15 @@ export default function NewsTable() {
         {/* 데스크톱 테이블 뷰 */}
         <div className="hidden lg:block bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            {/* ✅ col width 고정: table-fixed + colgroup만 추가 */}
+            <table className="w-full table-fixed">
+              <colgroup>
+                <col style={{ width: "45%" }} /> {/* 제목 */}
+                <col style={{ width: "20%" }} /> {/* 티커 */}
+                <col style={{ width: "25%" }} /> {/* 분석 */}
+                <col style={{ width: "10%" }} /> {/* AI 분석 */}
+              </colgroup>
+
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
@@ -192,11 +193,12 @@ export default function NewsTable() {
                   </th>
                 </tr>
               </thead>
+
               <tbody className="divide-y divide-slate-200">
                 {rows.map((item) => (
                   <tr
                     key={item.id}
-                    className="hover:bg-slate-50 transition-colors"
+                    className="hover:bg-slate-50 transition-colors cursor-pointer"
                     onClick={() => navigate(`/${item.id}`)}
                   >
                     <td className="px-6 py-4">
@@ -209,6 +211,7 @@ export default function NewsTable() {
                         </p>
                       </div>
                     </td>
+
                     <td className="px-6 py-4">
                       <div className="flex flex-wrap gap-1.5">
                         {item.tickers?.map((ticker, idx) => (
@@ -221,6 +224,7 @@ export default function NewsTable() {
                         ))}
                       </div>
                     </td>
+
                     <td className="px-6 py-4">
                       <div className="flex flex-wrap gap-1.5">
                         {Array.isArray(item.insights) &&
@@ -238,16 +242,16 @@ export default function NewsTable() {
                                 <span
                                   key={idx}
                                   className={`
-            px-2 py-0.5 text-xs rounded border
-            ${
-              ins.sentiment === "positive"
-                ? "bg-green-50 text-green-700 border-green-100"
-                : ins.sentiment === "negative"
-                  ? "bg-red-50 text-red-700 border-red-100"
-                  : "bg-gray-100 text-gray-700 border-gray-200"
-            }
-          `}
-                                  title={ins.sentiment_reasoning} // 마우스오버 시 이유 표시
+                                    px-2 py-0.5 text-xs rounded border
+                                    ${
+                                      ins.sentiment === "positive"
+                                        ? "bg-green-50 text-green-700 border-green-100"
+                                        : ins.sentiment === "negative"
+                                          ? "bg-red-50 text-red-700 border-red-100"
+                                          : "bg-gray-100 text-gray-700 border-gray-200"
+                                    }
+                                  `}
+                                  title={ins.sentiment_reasoning}
                                 >
                                   {ins.ticker} – {ins.sentiment}
                                 </span>
@@ -259,6 +263,7 @@ export default function NewsTable() {
                         )}
                       </div>
                     </td>
+
                     <td className="px-6 py-4 text-center">
                       {item.sentiment_insights ? (
                         <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500">
@@ -337,16 +342,16 @@ export default function NewsTable() {
                             <span
                               key={idx}
                               className={`
-           inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium
-            ${
-              ins.sentiment === "positive"
-                ? "bg-green-50 text-green-700 border-green-100"
-                : ins.sentiment === "negative"
-                  ? "bg-red-50 text-red-700 border-red-100"
-                  : "bg-gray-100 text-gray-700 border-gray-200"
-            }
-          `}
-                              title={ins.sentiment_reasoning} // 마우스오버 시 이유 표시
+                                inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium
+                                ${
+                                  ins.sentiment === "positive"
+                                    ? "bg-green-50 text-green-700 border-green-100"
+                                    : ins.sentiment === "negative"
+                                      ? "bg-red-50 text-red-700 border-red-100"
+                                      : "bg-gray-100 text-gray-700 border-gray-200"
+                                }
+                              `}
+                              title={ins.sentiment_reasoning}
                             >
                               {ins.ticker} – {ins.sentiment}
                             </span>

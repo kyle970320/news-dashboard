@@ -137,9 +137,7 @@ export default function NewsTable() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <TrendingUp className="w-8 h-8 text-blue-600" />
-              <h1 className="text-2xl font-bold text-slate-900">
-                주식 뉴스 대시보드
-              </h1>
+              <h1 className="text-2xl font-bold text-slate-900">호외요 호외</h1>
             </div>
             <div className="hidden sm:flex items-center gap-2 text-sm text-slate-600">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>

@@ -1,9 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./App.css";
-import { useEffect, useState } from "react";
-import { supabase } from "./lib/supabase";
-import type { Session } from "@supabase/supabase-js";
-import LoginForm from "./pages/LoginForm";
+// import { useEffect, useState } from "react";
+// import { supabase } from "./lib/supabase";
+// import type { Session } from "@supabase/supabase-js";
+// import LoginForm from "./pages/LoginForm";
 import { Router } from "./Router";
 
 function App() {
@@ -24,36 +24,36 @@ function App() {
     },
   });
 
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  // const [session, setSession] = useState<Session | null>(null);
+  // const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // 현재 세션 불러오기
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-    });
+  // useEffect(() => {
+  //   // 현재 세션 불러오기
+  //   supabase.auth.getSession().then(({ data }) => {
+  //     setSession(data.session);
+  //     setLoading(false);
+  //   });
 
-    // 세션 변경 감시
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-      },
-    );
+  //   // 세션 변경 감시
+  //   const { data: listener } = supabase.auth.onAuthStateChange(
+  //     (_event, session) => {
+  //       setSession(session);
+  //     },
+  //   );
 
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, []);
+  //   return () => {
+  //     listener.subscription.unsubscribe();
+  //   };
+  // }, []);
 
-  if (loading) {
-    return <div className="p-8">로딩 중...</div>;
-  }
+  // if (loading) {
+  //   return <div className="p-8">로딩 중...</div>;
+  // }
 
-  // 로그인 안 됐으면 로그인 폼 표시
-  if (!session) {
-    return <LoginForm onLogin={(s) => setSession(s)} />;
-  }
+  // // 로그인 안 됐으면 로그인 폼 표시
+  // if (!session) {
+  //   return <LoginForm onLogin={(s) => setSession(s)} />;
+  // }
   return (
     <>
       <QueryClientProvider client={queryClient}>
